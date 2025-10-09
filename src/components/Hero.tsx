@@ -21,7 +21,6 @@ const Hero = () => {
       <div className="relative z-10 text-center text-white px-4 max-w-4xl mx-auto">
         <h1 className="text-5xl md:text-7xl font-bold mb-6 leading-tight">
           Explore Our Engineering &amp;
-          {/* 🔹 Changed from text-secondary → text-primary */}
           <span className="block text-primary">Technology Solutions Today!</span>
         </h1>
 
@@ -30,8 +29,16 @@ const Hero = () => {
           electrical and electronic parts trusted by businesses across the Philippines.
         </p>
 
-        {/* 🔹 This will now use gold once you update button.tsx to map `hero` → primary */}
-        <Button variant="hero" size="lg" className="shadow-button">
+        {/* 🔹 Updated Button: Smooth scroll to Products section */}
+        <Button
+          variant="hero"
+          size="lg"
+          className="shadow-button"
+          onClick={() => {
+            const section = document.getElementById('products');
+            section?.scrollIntoView({ behavior: 'smooth' });
+          }}
+        >
           View Products
         </Button>
       </div>

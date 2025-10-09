@@ -1,6 +1,5 @@
 import React, { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Menu, X, ShoppingCart } from "lucide-react";
+import { Menu, X } from "lucide-react";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -16,22 +15,22 @@ const Header = () => {
 
   return (
     <header className="sticky top-0 z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 shadow-header">
-      <div className="container mx-auto px-4 py-4">
+      <div className="container mx-auto px-6 py-3">
         <div className="flex items-center justify-between">
-          {/* Logo */}
-          <div className="flex items-center space-x-2">
+          {/* Logo + Company Name */}
+          <div className="flex items-center">
             <img
-              src="/Back.png" // put Back.png inside public/
-              alt="Kimoel's Trading Logo"
-              className="w-10 h-10 rounded-lg object-cover"
+              src="/Back.png" // Make sure this file is inside /public
+              alt="Kimoel Trading Logo"
+              className="w-20 h-20 object-contain"
             />
-            <span className="text-2xl font-bold text-brand-blue-dark">
-              Kimoel&apos;s Trading Inc.
+            <span className="ml-4 text-xl md:text-2xl font-bold text-brand-blue-dark whitespace-nowrap tracking-wide">
+              KIMOEL TRADING AND CONSTRUCTION INC.
             </span>
           </div>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center space-x-8">
+          <nav className="hidden md:flex items-center space-x-8 lg:space-x-10">
             {navLinks.map((link) => (
               <a
                 key={link.name}
@@ -42,19 +41,6 @@ const Header = () => {
               </a>
             ))}
           </nav>
-
-          {/* Desktop Actions */}
-          <div className="hidden md:flex items-center space-x-4">
-            <Button variant="outline" size="sm">
-              Login/Register
-            </Button>
-            <Button variant="ghost" size="sm">
-              <ShoppingCart className="w-5 h-5" />
-            </Button>
-            <Button variant="hero" size="sm">
-              Contact Us
-            </Button>
-          </div>
 
           {/* Mobile Menu Button */}
           <button
@@ -72,7 +58,7 @@ const Header = () => {
         {/* Mobile Menu */}
         {isMenuOpen && (
           <div className="md:hidden mt-4 py-4 border-t">
-            <nav className="flex flex-col space-y-4">
+            <nav className="flex flex-col space-y-3">
               {navLinks.map((link) => (
                 <a
                   key={link.name}
@@ -83,19 +69,6 @@ const Header = () => {
                   {link.name}
                 </a>
               ))}
-
-              <div className="pt-4 border-t flex flex-col space-y-3">
-                <Button variant="outline" size="sm">
-                  Login/Register
-                </Button>
-                <Button variant="ghost" size="sm" className="justify-start">
-                  <ShoppingCart className="w-5 h-5 mr-2" />
-                  Shopping Cart
-                </Button>
-                <Button variant="hero" size="sm">
-                  Contact Us
-                </Button>
-              </div>
             </nav>
           </div>
         )}

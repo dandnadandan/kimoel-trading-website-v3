@@ -6,7 +6,7 @@ import aboutImage from '@/assets/ABOUT US.png';
 
 const About = () => {
   return (
-    <section id="about" className="py-20 bg-muted/30">
+    <section id="about" className="py-20 bg-muted/30 scroll-mt-24">
       <div className="container mx-auto px-6 lg:px-12">
         {/* Company Intro */}
         <div className="grid md:grid-cols-2 gap-12 items-center mb-20">
