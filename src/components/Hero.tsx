@@ -1,43 +1,68 @@
-import React from 'react';
-import { Button } from '@/components/ui/button';
-import heroImage from '@/assets/3.png';
+import React from "react";
+import { Button } from "@/components/ui/button";
+import heroImage from "@/assets/3.png";
 
 const Hero = () => {
+  const scrollToProducts = () => {
+    const target = document.getElementById("products");
+    if (!target) return;
+
+    const header = document.querySelector("header") as HTMLElement | null;
+    const headerHeight = header?.offsetHeight ?? 0;
+    const top =
+      target.getBoundingClientRect().top + window.scrollY - (headerHeight + 8);
+
+    window.scrollTo({ top, behavior: "smooth" });
+  };
+
   return (
     <section
       id="home"
-      className="relative min-h-screen flex items-center justify-center overflow-hidden"
+      className="relative min-h-[78vh] md:min-h-screen flex items-center justify-center overflow-hidden"
+      aria-label="Hero section"
     >
-      {/* Background Image */}
+      {/* Background image */}
       <div
         className="absolute inset-0 bg-cover bg-center bg-no-repeat"
         style={{ backgroundImage: `url(${heroImage})` }}
+        aria-hidden="true"
       />
-
-      {/* Overlay */}
-      <div className="absolute inset-0 bg-gradient-hero" />
+      {/* Dark/Gold overlay for readability */}
+      <div className="absolute inset-0 bg-gradient-hero" aria-hidden="true" />
 
       {/* Content */}
-      <div className="relative z-10 text-center text-white px-4 max-w-4xl mx-auto">
-        <h1 className="text-5xl md:text-7xl font-bold mb-6 leading-tight">
+      <div className="relative z-10 text-center text-white container mx-auto px-4 sm:px-6 lg:px-12 py-16 md:py-24">
+        <h1
+          className="
+            mx-auto max-w-[18ch]
+            font-extrabold tracking-tight
+            leading-tight md:leading-tight
+            text-3xl sm:text-4xl md:text-5xl lg:text-6xl
+            mb-4 sm:mb-6
+          "
+        >
           Explore Our Engineering &amp;
           <span className="block text-primary">Technology Solutions Today!</span>
         </h1>
 
-        <p className="text-xl md:text-2xl mb-8 text-white/90 max-w-2xl mx-auto">
-          Delivering innovative machines and reliable components from industrial equipment to
-          electrical and electronic parts trusted by businesses across the Philippines.
+        <p
+          className="
+            mx-auto max-w-[60ch] text-white/90
+            text-base sm:text-lg md:text-xl
+            mb-6 sm:mb-8
+          "
+        >
+          Delivering innovative machines and reliable components from industrial
+          equipment to electrical and electronic parts trusted by businesses
+          across the Philippines.
         </p>
 
-        {/* 🔹 Updated Button: Smooth scroll to Products section */}
         <Button
           variant="hero"
           size="lg"
-          className="shadow-button"
-          onClick={() => {
-            const section = document.getElementById('products');
-            section?.scrollIntoView({ behavior: 'smooth' });
-          }}
+          className="shadow-button w-full sm:w-auto"
+          onClick={scrollToProducts}
+          aria-label="Scroll to products"
         >
           View Products
         </Button>

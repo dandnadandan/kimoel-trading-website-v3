@@ -29,9 +29,9 @@ const About = () => {
           {/* Company image */}
           <div className="rounded-2xl overflow-hidden shadow-lg">
             <img
-              src={aboutImage} // 👈 replace with your image
+              src={aboutImage}
               alt="About Kimoel Trading & Construction"
-              className="w-full h-[400px] object-cover"
+              className="w-full h-auto max-h-[75vh] object-contain bg-gray-50 rounded-2xl md:h-[400px] md:object-cover"
             />
           </div>
         </div>
