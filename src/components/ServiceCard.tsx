@@ -1,5 +1,6 @@
 import React from "react";
 import { motion } from "framer-motion";
+import { Button } from "@/components/ui/button";
 
 interface ServiceCardProps {
   title: string;
@@ -7,6 +8,7 @@ interface ServiceCardProps {
   image: string;
   imageAlt: string;
   buttonText?: string;
+  onToggle?: () => void; // Add onToggle prop
 }
 
 const ServiceCard: React.FC<ServiceCardProps> = ({
@@ -15,6 +17,7 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
   image,
   imageAlt,
   buttonText,
+  onToggle,
 }) => {
   // Reuse the same animation pattern as Products.tsx
   const itemVariants = {
@@ -51,12 +54,17 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
           </p>
         </div>
 
-        {/* Button */}
-        {buttonText && (
-          <button className="mt-auto px-4 py-2 text-sm sm:text-base bg-brand-gold text-white font-medium rounded-lg hover:bg-brand-gold-dark transition-colors duration-300">
-            {buttonText}
-          </button>
-        )}
+        {/* View Details Button */}
+        <Button
+          onClick={(e) => {
+            e.stopPropagation(); // Prevent card click
+            onToggle?.();
+          }}
+          variant="outline"
+          className="w-full border-black text-black hover:bg-black hover:text-white transition-colors"
+        >
+          View Details
+        </Button>
       </div>
     </motion.div>
   );

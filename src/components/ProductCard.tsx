@@ -1,5 +1,6 @@
 import React from "react";
 import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 
 interface ProductCardProps {
@@ -50,9 +51,21 @@ const ProductCard: React.FC<ProductCardProps> = ({
           >
             {title}
           </h3>
-          <p className="text-sm sm:text-base text-muted-foreground leading-relaxed">
+          <p className="text-sm sm:text-base text-muted-foreground leading-relaxed mb-4">
             {description}
           </p>
+          
+          {/* View Details Button */}
+          <Button
+            onClick={(e) => {
+              e.stopPropagation(); // Prevent card click
+              onToggle?.();
+            }}
+            variant="outline"
+            className="w-full border-black text-black hover:bg-black hover:text-white transition-colors"
+          >
+            View Details
+          </Button>
         </CardContent>
       </Card>
     </motion.div>

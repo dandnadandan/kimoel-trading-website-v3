@@ -1,6 +1,7 @@
 // Services.tsx
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import ServiceCard from "./ServiceCard";
 import DetailsModal from "./DetailsModal";
 import { getServicesByCategory, getRelatedServices } from "@/data/services";
 import { useInvoice } from "@/contexts/InvoiceContext";
@@ -224,34 +225,13 @@ const Services = () => {
                     }}
                     layout
                   >
-                    <div 
-                      className="group bg-white rounded-2xl shadow-md overflow-hidden transition-shadow focus-within:ring-2 focus-within:ring-primary/60 cursor-pointer"
-                      onClick={() => handleServiceClick(service)}
-                    >
-                      <motion.div
-                        className="aspect-[16/9] overflow-hidden"
-                        initial={{ scale: 1 }}
-                        whileHover={{ scale: 1.04 }}
-                        whileTap={{ scale: 0.98 }}
-                        transition={{ type: "spring", stiffness: 220, damping: 20 }}
-                        layout
-                      >
-                        <img
-                          src={service.image}
-                          alt={service.imageAlt}
-                          className="w-full h-full object-cover"
-                          loading="lazy"
-                        />
-                      </motion.div>
-                      <div className="p-4 sm:p-5">
-                        <h4 className="text-lg font-semibold text-brand-blue-dark transition-colors duration-300 group-hover:text-yellow-500">
-                          {service.name}
-                        </h4>
-                        <p className="mt-1 text-sm sm:text-base text-gray-600">
-                          {service.description}
-                        </p>
-                      </div>
-                    </div>
+                    <ServiceCard
+                      title={service.name}
+                      description={service.description}
+                      image={service.image}
+                      imageAlt={service.imageAlt}
+                      onToggle={() => handleServiceClick(service)}
+                    />
                   </motion.div>
                 ))}
               </motion.div>
