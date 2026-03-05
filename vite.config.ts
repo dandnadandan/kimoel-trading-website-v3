@@ -19,20 +19,29 @@ export default defineConfig(({ mode }) => ({
     rollupOptions: {
       output: {
         manualChunks: {
-          // Split vendor libraries
-          vendor: ['react', 'react-dom'],
-          // Split UI components
-          ui: ['@/components/ui/button', '@/components/ui/input', '@/components/ui/textarea', '@/components/ui/badge'],
-          // Split icons
-          icons: ['lucide-react'],
-          // Split routing and state management
-          router: ['react-router-dom'],
-          state: ['@tanstack/react-query'],
-          // Split animation library
-          animation: ['framer-motion'],
+          // Split React core separately
+          react: ['react'],
+          'react-dom': ['react-dom'],
+          // Split each major library separately
+          'react-router': ['react-router-dom'],
+          'react-query': ['@tanstack/react-query'],
+          'framer-motion': ['framer-motion'],
+          // Split icons into smaller chunks
+          'lucide-icons': ['lucide-react'],
+          // Split UI components individually
+          'ui-button': ['@/components/ui/button'],
+          'ui-input': ['@/components/ui/input'],
+          'ui-textarea': ['@/components/ui/textarea'],
+          'ui-badge': ['@/components/ui/badge'],
+          // Split contexts separately
+          'invoice-context': ['@/contexts/InvoiceContext'],
+          // Split major components
+          'details-modal': ['@/components/DetailsModal'],
+          'invoice-drawer': ['@/components/InvoiceDrawer'],
+          'invoice-modal': ['@/components/InvoiceRequestModal'],
         },
       },
     },
-    chunkSizeWarningLimit: 1000, // Increase limit to 1MB
+    chunkSizeWarningLimit: 300, // Reduce limit to 300KB
   },
 }));
