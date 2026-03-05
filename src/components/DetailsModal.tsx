@@ -79,17 +79,17 @@ const DetailsModal: React.FC<DetailsModalProps> = ({
   const getDefaultSpecs = () => {
     if (itemType === 'product') {
       return {
-        'Type': item.category || 'Product',
-        'Model': item.name || 'Standard Model',
+        'Type': item?.category || 'Product',
+        'Model': item?.name || 'Standard Model',
         'Condition': 'New',
         'Warranty': '1 Year',
         'Origin': 'Imported',
-        'Availability': (item as Product).inStock ? 'In Stock' : 'Out of Stock'
+        'Availability': (item as any)?.inStock ? 'In Stock' : 'Out of Stock'
       };
     } else {
       return {
-        'Service Type': item.category || 'Service',
-        'Duration': (item as Service).duration || 'Varies',
+        'Service Type': item?.category || 'Service',
+        'Duration': (item as any)?.duration || 'Varies',
         'Location': 'On-site Available',
         'Experience': '5+ Years',
         'Certification': 'Professional',
@@ -98,11 +98,11 @@ const DetailsModal: React.FC<DetailsModalProps> = ({
     }
   };
 
-  const specs = (item as any).specs || getDefaultSpecs();
-  const stockCount = (item as any).stockCount || 50;
-  const images = (item as any).images || [item.image];
+  const specs = (item as any)?.specs || getDefaultSpecs();
+  const stockCount = (item as any)?.stockCount || 50;
+  const images = (item as any)?.images || [item?.image];
 
-  if (!isOpen) return null;
+  if (!isOpen || !item) return null;
 
   return (
     <>
@@ -147,9 +147,12 @@ const DetailsModal: React.FC<DetailsModalProps> = ({
               <div className="lg:w-1/2 bg-gray-50 p-8">
                 <div className="aspect-square rounded-xl overflow-hidden bg-white shadow-lg mb-4">
                   <img
-                    src={images[selectedImageIndex]}
-                    alt={item.imageAlt}
+                    src={images[selectedImageIndex] || '/placeholder.jpg'}
+                    alt={item?.imageAlt || 'Product image'}
                     className="w-full h-full object-cover"
+                    onError={(e) => {
+                      e.currentTarget.src = '/placeholder.jpg';
+                    }}
                   />
                 </div>
                 
@@ -181,8 +184,18 @@ const DetailsModal: React.FC<DetailsModalProps> = ({
               <div className="lg:w-1/2 p-8 overflow-y-auto">
                 {/* Product Name */}
                 <h1 className="text-3xl font-bold text-gray-900 mb-4">
-                  {item.name}
+                  {item?.name || 'Product'}
                 </h1>
+
+                {/* Price and Rating */}
+                <div className="flex items-center gap-2 mb-4">
+                  <div className="flex items-center">
+                    {renderStars(item?.rating || 4.5)}
+                  </div>
+                  <span className="text-sm text-gray-600">
+                    {item?.rating || 4.5} ({Math.floor(Math.random() * 50) + 10} reviews)
+                  </span>
+                </div>
 
                 {/* Price and Stock */}
                 <div className="flex items-center justify-between mb-6">
@@ -201,7 +214,7 @@ const DetailsModal: React.FC<DetailsModalProps> = ({
 
                 {/* Description */}
                 <p className="text-gray-600 leading-relaxed mb-6">
-                  {item.longDescription || item.description}
+                  {item?.longDescription || item?.description || 'No description available.'}
                 </p>
 
                 {/* Divider */}
