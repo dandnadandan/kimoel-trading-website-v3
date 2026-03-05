@@ -1,6 +1,6 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
-import heroImage from "@/assets/3.png";
+import heroImage from "@/assets/ABOUT US.png";
 
 const Hero = () => {
   const scrollToProducts = () => {

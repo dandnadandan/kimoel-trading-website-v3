@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 
 // Category images
 import electricalImage from "@/assets/ELECTRICAL.jpg";
-import mechanicalImage from "@/assets/MECHANICAL COMPONENTS.png";
+import mechanicalImage from "@/assets/AC Motors and Gear Motors.png";
 import pneumaticsImage from "@/assets/PNEUMATICS.png";
 import toolsImage from "@/assets/TOOLS.jpeg";
 

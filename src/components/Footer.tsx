@@ -1,6 +1,6 @@
 import React from "react";
 import { Facebook } from "lucide-react";
-import logo from "@/assets/Back.png";
+import logo from "@/assets/ABOUT US.png";
 
 const Footer = () => {
   return (
