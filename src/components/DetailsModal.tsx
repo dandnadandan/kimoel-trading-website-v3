@@ -270,15 +270,18 @@ const DetailsModal: React.FC<DetailsModalProps> = ({
                 </div>
 
                 {/* Specifications Table */}
-                <div>
+                <div className="mt-8">
                   <h3 className="text-lg font-semibold text-gray-900 mb-4">Specifications</h3>
-                  <div className="bg-gray-50 rounded-lg overflow-hidden">
-                    {Object.entries(specs).map(([key, value]) => (
-                      <div key={key} className="flex border-b border-gray-200 last:border-b-0">
-                        <div className="w-1/3 px-4 py-3 bg-gray-100 font-medium text-sm text-gray-900">
+                  <div className="bg-gray-50 rounded-lg overflow-hidden border border-gray-200">
+                    {Object.entries(specs).map(([key, value], index) => (
+                      <div 
+                        key={key} 
+                        className={`flex ${index !== Object.entries(specs).length - 1 ? 'border-b border-gray-200' : ''}`}
+                      >
+                        <div className="w-2/5 px-4 py-3 bg-white font-medium text-sm text-gray-900 border-r border-gray-200">
                           {key}
                         </div>
-                        <div className="w-2/3 px-4 py-3 text-sm text-gray-700">
+                        <div className="w-3/5 px-4 py-3 bg-gray-50 text-sm text-gray-700">
                           {String(value)}
                         </div>
                       </div>
