@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, FileText, Send, Check, Star } from 'lucide-react';
+import { X, ShoppingCart, Minus, Plus, Check, Star, Package, Truck, Shield } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useInvoice } from '@/contexts/InvoiceContext';
@@ -25,11 +25,15 @@ const DetailsModal: React.FC<DetailsModalProps> = ({
 }) => {
   const { addRequest } = useInvoice();
   const [showInvoiceModal, setShowInvoiceModal] = useState(false);
+  const [quantity, setQuantity] = useState(1);
+  const [selectedImageIndex, setSelectedImageIndex] = useState(0);
 
   // Reset form state when modal opens/closes
   useEffect(() => {
     if (!isOpen) {
       setShowInvoiceModal(false);
+      setQuantity(1);
+      setSelectedImageIndex(0);
     }
   }, [isOpen]);
 
@@ -38,7 +42,7 @@ const DetailsModal: React.FC<DetailsModalProps> = ({
       itemType: itemType,
       itemName: item.name,
       itemId: item.id,
-      quantity: 1, // Default quantity since we removed the field
+      quantity: quantity,
       customerInfo: {
         name: formData.name,
         email: formData.email,
@@ -51,6 +55,12 @@ const DetailsModal: React.FC<DetailsModalProps> = ({
     setShowInvoiceModal(false);
   };
 
+  const handleQuantityChange = (change: number) => {
+    const newQuantity = quantity + change;
+    if (newQuantity >= 1 && newQuantity <= 99) {
+      setQuantity(newQuantity);
+    }
+  };
 
   const renderStars = (rating: number) => {
     return Array.from({ length: 5 }, (_, i) => (
@@ -65,18 +75,45 @@ const DetailsModal: React.FC<DetailsModalProps> = ({
     ));
   };
 
+  // Generate default specs if not provided
+  const getDefaultSpecs = () => {
+    if (itemType === 'product') {
+      return {
+        'Type': item.category || 'Product',
+        'Model': item.name || 'Standard Model',
+        'Condition': 'New',
+        'Warranty': '1 Year',
+        'Origin': 'Imported',
+        'Availability': (item as Product).inStock ? 'In Stock' : 'Out of Stock'
+      };
+    } else {
+      return {
+        'Service Type': item.category || 'Service',
+        'Duration': (item as Service).duration || 'Varies',
+        'Location': 'On-site Available',
+        'Experience': '5+ Years',
+        'Certification': 'Professional',
+        'Availability': 'Available'
+      };
+    }
+  };
+
+  const specs = (item as any).specs || getDefaultSpecs();
+  const stockCount = (item as any).stockCount || 50;
+  const images = (item as any).images || [item.image];
+
   if (!isOpen) return null;
 
   return (
-    <AnimatePresence>
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+    <>
+      <AnimatePresence>
         {/* Backdrop */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.2 }}
-          className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+          className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50"
           onClick={onClose}
         />
 
@@ -91,169 +128,156 @@ const DetailsModal: React.FC<DetailsModalProps> = ({
             damping: 25,
             duration: 0.3
           }}
-          className="relative bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden"
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 pointer-events-none"
         >
-          {/* Close Button */}
-          <button
-            onClick={onClose}
-            className="absolute top-4 right-4 z-10 p-2 rounded-full bg-white/90 hover:bg-white shadow-lg transition-colors"
+          <div 
+            className="bg-white rounded-2xl shadow-2xl max-w-6xl w-full max-h-[85vh] overflow-hidden pointer-events-auto"
+            onClick={(e) => e.stopPropagation()}
           >
-            <X className="w-5 h-5" />
-          </button>
+            {/* Close Button */}
+            <button
+              onClick={onClose}
+              className="absolute top-6 right-6 z-10 p-2 rounded-full bg-white/90 hover:bg-white shadow-lg transition-colors"
+            >
+              <X className="w-5 h-5" />
+            </button>
 
-          <div className="flex flex-col lg:flex-row h-full">
-            {/* Image Gallery */}
-            <div className="lg:w-1/2 bg-gray-50 p-6 lg:p-8">
-              <div className="aspect-square rounded-xl overflow-hidden bg-white shadow-lg">
-                <img
-                  src={item.image}
-                  alt={item.imageAlt}
-                  className="w-full h-full object-cover"
-                />
-              </div>
-            </div>
-
-            {/* Content */}
-            <div className="lg:w-1/2 p-6 lg:p-8 overflow-y-auto">
-              {/* Header */}
-              <div className="mb-6">
-                <Badge variant="secondary" className="mb-3">
-                  {item.category}
-                </Badge>
-                <h2 className="text-2xl lg:text-3xl font-bold text-gray-900 mb-3">
-                  {item.name}
-                </h2>
+            <div className="flex flex-col lg:flex-row h-full">
+              {/* Left: Image Gallery */}
+              <div className="lg:w-1/2 bg-gray-50 p-8">
+                <div className="aspect-square rounded-xl overflow-hidden bg-white shadow-lg mb-4">
+                  <img
+                    src={images[selectedImageIndex]}
+                    alt={item.imageAlt}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
                 
-                {/* Rating */}
-                <div className="flex items-center gap-2 mb-4">
-                  <div className="flex items-center">
-                    {renderStars(item.rating)}
-                  </div>
-                  <span className="text-sm text-gray-600">
-                    {item.rating} ({Math.floor(Math.random() * 50) + 10} reviews)
-                  </span>
-                </div>
-              </div>
-
-              {/* Description */}
-              <div className="mb-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">Description</h3>
-                <p className="text-gray-600 leading-relaxed">
-                  {item.longDescription || item.description}
-                </p>
-              </div>
-
-              {/* Features */}
-              {item.features && item.features.length > 0 && (
-                <div className="mb-6">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">Features</h3>
-                  <ul className="space-y-2">
-                    {item.features.map((feature, index) => (
-                      <li key={index} className="flex items-center gap-2 text-gray-600">
-                        <Check className="w-4 h-4 text-green-500 flex-shrink-0" />
-                        <span>{feature}</span>
-                      </li>
+                {/* Thumbnails */}
+                {images.length > 1 && (
+                  <div className="flex gap-2 justify-center">
+                    {images.map((image: string, index: number) => (
+                      <button
+                        key={index}
+                        onClick={() => setSelectedImageIndex(index)}
+                        className={`aspect-square w-16 rounded-lg overflow-hidden bg-white shadow cursor-pointer transition-all ${
+                          selectedImageIndex === index 
+                            ? 'ring-2 ring-blue-500' 
+                            : 'hover:ring-2 hover:ring-gray-300'
+                        }`}
+                      >
+                        <img
+                          src={image}
+                          alt={`${item.imageAlt} ${index + 1}`}
+                          className="w-full h-full object-cover"
+                        />
+                      </button>
                     ))}
-                  </ul>
-                </div>
-              )}
-
-              {/* Stock/Availability */}
-              <div className="flex items-center gap-2 mb-6">
-                {itemType === 'product' ? (
-                  <>
-                    {(item as Product).inStock ? (
-                      <div className="flex items-center gap-1 text-green-600">
-                        <Check className="w-4 h-4" />
-                        <span className="text-sm font-medium">In Stock</span>
-                      </div>
-                    ) : (
-                      <div className="flex items-center gap-1 text-red-600">
-                        <X className="w-4 h-4" />
-                        <span className="text-sm font-medium">Out of Stock</span>
-                      </div>
-                    )}
-                  </>
-                ) : (
-                  <div className="flex items-center gap-1 text-green-600">
-                    <Check className="w-4 h-4" />
-                    <span className="text-sm font-medium">Available</span>
                   </div>
                 )}
               </div>
 
-              {/* Create Invoice Section */}
-              <div className="border-t pt-6">
-                <div className="bg-gray-50 rounded-lg p-6">
-                  <div className="flex items-center justify-between mb-4">
-                    <div>
-                      <h3 className="text-xl font-bold text-gray-900">Request Pricing</h3>
-                      <p className="text-gray-600 text-sm mt-1">
-                        Get a customized quote for this {itemType}
-                      </p>
-                    </div>
-                    <FileText className="w-8 h-8 text-gray-400" />
+              {/* Right: Details Panel */}
+              <div className="lg:w-1/2 p-8 overflow-y-auto">
+                {/* Product Name */}
+                <h1 className="text-3xl font-bold text-gray-900 mb-4">
+                  {item.name}
+                </h1>
+
+                {/* Price and Stock */}
+                <div className="flex items-center justify-between mb-6">
+                  <div className="flex items-center gap-4">
+                    <span className="text-3xl font-bold text-gray-900">
+                      Contact for Price
+                    </span>
+                    <Badge className="bg-green-100 text-green-800 border-green-200">
+                      {itemType === 'product' 
+                        ? `In Stock (${stockCount})` 
+                        : 'Available'
+                      }
+                    </Badge>
                   </div>
-                  
-                  <Button
-                    onClick={() => setShowInvoiceModal(true)}
-                    className="w-full bg-black text-white hover:bg-gray-800 py-3 text-lg font-semibold"
-                  >
-                    Create Invoice
-                  </Button>
-                  
-                  <p className="text-xs text-gray-500 text-center mt-3">
-                    No commitment required. We'll contact you within 24 hours.
-                  </p>
+                </div>
+
+                {/* Description */}
+                <p className="text-gray-600 leading-relaxed mb-6">
+                  {item.longDescription || item.description}
+                </p>
+
+                {/* Divider */}
+                <div className="border-t border-gray-200 mb-6"></div>
+
+                {/* Quantity Stepper */}
+                <div className="flex items-center gap-4 mb-6">
+                  <span className="text-sm font-medium text-gray-700">Quantity:</span>
+                  <div className="flex items-center border border-gray-300 rounded-lg">
+                    <button
+                      onClick={() => handleQuantityChange(-1)}
+                      className="p-2 hover:bg-gray-100 transition-colors"
+                      disabled={quantity <= 1}
+                    >
+                      <Minus className="w-4 h-4" />
+                    </button>
+                    <span className="px-4 py-2 min-w-[60px] text-center font-medium">
+                      {quantity}
+                    </span>
+                    <button
+                      onClick={() => handleQuantityChange(1)}
+                      className="p-2 hover:bg-gray-100 transition-colors"
+                      disabled={quantity >= 99}
+                    >
+                      <Plus className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
+
+                {/* Create Invoice Button */}
+                <Button
+                  onClick={() => setShowInvoiceModal(true)}
+                  className="w-full bg-black text-white hover:bg-gray-800 py-4 text-lg font-semibold mb-8"
+                >
+                  <ShoppingCart className="w-5 h-5 mr-2" />
+                  Create Invoice
+                </Button>
+
+                {/* Perks Row */}
+                <div className="grid grid-cols-3 gap-4 mb-8">
+                  <div className="flex flex-col items-center text-center p-4 bg-gray-50 rounded-lg">
+                    <Package className="w-6 h-6 text-blue-600 mb-2" />
+                    <span className="text-sm font-medium text-gray-900">Premium Quality</span>
+                  </div>
+                  <div className="flex flex-col items-center text-center p-4 bg-gray-50 rounded-lg">
+                    <Truck className="w-6 h-6 text-blue-600 mb-2" />
+                    <span className="text-sm font-medium text-gray-900">Fast Delivery</span>
+                  </div>
+                  <div className="flex flex-col items-center text-center p-4 bg-gray-50 rounded-lg">
+                    <Shield className="w-6 h-6 text-blue-600 mb-2" />
+                    <span className="text-sm font-medium text-gray-900">Warranty Included</span>
+                  </div>
+                </div>
+
+                {/* Specifications Table */}
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-4">Specifications</h3>
+                  <div className="bg-gray-50 rounded-lg overflow-hidden">
+                    {Object.entries(specs).map(([key, value]) => (
+                      <div key={key} className="flex border-b border-gray-200 last:border-b-0">
+                        <div className="w-1/3 px-4 py-3 bg-gray-100 font-medium text-sm text-gray-900">
+                          {key}
+                        </div>
+                        <div className="w-2/3 px-4 py-3 text-sm text-gray-700">
+                          {String(value)}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </div>
-
-              {/* Additional Info for Services */}
-              {itemType === 'service' && (
-                <div className="mb-6">
-                  <h3 className="text-lg font-semibold mb-2">Service Details</h3>
-                  <div className="flex items-center gap-4 text-sm text-gray-600">
-                    <span>Duration: {(item as Service).duration}</span>
-                  </div>
-                </div>
-              )}
             </div>
           </div>
-
-          {/* Related Items */}
-          {relatedItems.length > 0 && (
-            <div className="border-t p-6 lg:p-8">
-              <h3 className="text-lg font-semibold mb-4">Related {itemType === 'product' ? 'Products' : 'Services'}</h3>
-              <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                {relatedItems.map((relatedItem) => (
-                  <div
-                    key={relatedItem.id}
-                    className="bg-gray-50 rounded-lg p-3 cursor-pointer hover:bg-gray-100 transition-colors"
-                    onClick={() => {
-                      // This would typically open the related item in the modal
-                      // For now, we'll just close and the parent can handle opening the new item
-                      onClose();
-                    }}
-                  >
-                    <div className="aspect-square rounded-lg overflow-hidden mb-2">
-                      <img
-                        src={relatedItem.image}
-                        alt={relatedItem.imageAlt}
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
-                    <h4 className="text-sm font-medium truncate">{relatedItem.name}</h4>
-                    <p className="text-xs text-gray-600">
-                      Contact for pricing
-                    </p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
         </motion.div>
-      </div>
-      
+      </AnimatePresence>
+
       {/* Invoice Request Modal */}
       <InvoiceRequestModal
         isOpen={showInvoiceModal}
@@ -262,7 +286,7 @@ const DetailsModal: React.FC<DetailsModalProps> = ({
         itemType={itemType}
         onSubmit={handleInvoiceRequest}
       />
-    </AnimatePresence>
+    </>
   );
 };
 
