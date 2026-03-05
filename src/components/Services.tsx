@@ -1,6 +1,11 @@
 // Services.tsx
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import DetailsModal from "./DetailsModal";
+import { getServicesByCategory, getRelatedServices } from "@/data/services";
+import { useInvoice } from "@/contexts/InvoiceContext";
+import { FileText } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 // Import category images
 import engineeringImage from "@/assets/ENGINEERING SERVICES.jpg";
@@ -40,7 +45,10 @@ const itemVariants = {
 
 const Services = () => {
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
-  const [activeTap, setActiveTap] = useState<string | null>(null); // mobile tap highlight (optional)
+  const [activeTap, setActiveTap] = useState<string | null>(null);
+  const [selectedService, setSelectedService] = useState<any>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const { toggleDrawer, getTotalRequests } = useInvoice();
 
   // Main categories
   const categories = [
@@ -64,133 +72,46 @@ const Services = () => {
     },
   ];
 
-  // Sub-services for each category
-  const subServices: Record<
-    string,
-    { title: string; description: string; image: string; imageAlt: string }[]
-  > = {
-    "Engineering Services": [
-      {
-        title: "Automation & Machine Design",
-        description: "Custom automation and machine design solutions.",
-        image: automationDesign,
-        imageAlt: "Automation & Machine Design",
-      },
-      {
-        title: "Architectural & Structural Design",
-        description: "Designing functional and durable structures.",
-        image: architecturalDesign,
-        imageAlt: "Architectural & Structural Design",
-      },
-      {
-        title: "Electrical Works",
-        description: "Reliable electrical works for industrial and commercial use.",
-        image: electricalWorks,
-        imageAlt: "Electrical Works",
-      },
-      {
-        title: "Sheet Metal Works",
-        description: "Fabrication and processing of sheet metal components.",
-        image: sheetMetal,
-        imageAlt: "Sheet Metal Works",
-      },
-      {
-        title: "Fabrication of Electrical Control Panel",
-        description: "High-quality electrical control panel fabrication.",
-        image: controlPanel,
-        imageAlt: "Control Panel Fabrication",
-      },
-    ],
-    "Machining & Fabrication": [
-      {
-        title: "CNC Laser Cutting Machine",
-        description: "Precision cutting with advanced CNC laser technology.",
-        image: cncLaser,
-        imageAlt: "CNC Laser Cutting",
-      },
-      {
-        title: "CNC Milling Machine",
-        description: "High-precision CNC milling for complex components.",
-        image: cncMilling,
-        imageAlt: "CNC Milling",
-      },
-      {
-        title: "Lathe Machine",
-        description: "Turning solutions using high-grade lathe machines.",
-        image: latheMachine,
-        imageAlt: "Lathe Machine",
-      },
-      {
-        title: "Milling Machine",
-        description: "Reliable milling machine services for all industries.",
-        image: millingMachine,
-        imageAlt: "Milling Machine",
-      },
-      {
-        title: "Press Brake Bending Machine",
-        description:
-          "Accurate sheet metal bending with press brake technology.",
-        image: pressBrake,
-        imageAlt: "Press Brake Bending",
-      },
-      {
-        title: "Shearing Machine",
-        description: "Efficient sheet metal cutting using shearing machines.",
-        image: shearing,
-        imageAlt: "Shearing Machine",
-      },
-      {
-        title: "Band Saw Machine",
-        description: "Versatile cutting services with band saw machines.",
-        image: bandSaw,
-        imageAlt: "Band Saw Machine",
-      },
-    ],
-    "Civil Works": [
-      {
-        title: "Rental of Backhoe",
-        description: "Reliable backhoe rental for construction projects.",
-        image: backhoe,
-        imageAlt: "Backhoe Rental",
-      },
-      {
-        title: "Road Rehabilitation",
-        description: "Comprehensive road rehabilitation and maintenance.",
-        image: roadRehab,
-        imageAlt: "Road Rehabilitation",
-      },
-      {
-        title: "Concreting",
-        description: "High-quality concreting for structural integrity.",
-        image: concreting,
-        imageAlt: "Concreting",
-      },
-      {
-        title: "Structural",
-        description: "Strong and reliable structural construction services.",
-        image: structural,
-        imageAlt: "Structural Works",
-      },
-      {
-        title: "Fire Protection System",
-        description: "Installation of reliable fire protection systems.",
-        image: fireProtection,
-        imageAlt: "Fire Protection",
-      },
-    ],
+  const handleServiceClick = (service: any) => {
+    setSelectedService(service);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setSelectedService(null);
+  };
+
+  const getRelatedItems = () => {
+    if (!selectedService) return [];
+    return getRelatedServices(selectedService.id, 4);
   };
 
   return (
     <section id="services" className="py-14 md:py-20 bg-muted/30 scroll-mt-24">
       <div className="container mx-auto px-4 sm:px-6 lg:px-12">
-        <div className="text-center mb-10 md:mb-16">
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-brand-blue-dark mb-3 md:mb-4">
-            Our Services
-          </h2>
-          <p className="text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto">
-            We provide engineering, machining, and civil works services to support
-            industrial and construction needs with precision and reliability.
-          </p>
+        <div className="flex items-center justify-between mb-10 md:mb-16">
+          <div className="text-center flex-1">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-brand-blue-dark mb-3 md:mb-4">
+              Our Services
+            </h2>
+            <p className="text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto">
+              We provide engineering, machining, and civil works services to support
+              industrial and construction needs with precision and reliability.
+            </p>
+          </div>
+          <Button
+            onClick={toggleDrawer}
+            variant="outline"
+            className="relative ml-4"
+          >
+            <FileText className="w-5 h-5" />
+            {getTotalRequests() > 0 && (
+              <span className="absolute -top-2 -right-2 bg-blue-600 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">
+                {getTotalRequests()}
+              </span>
+            )}
+          </Button>
         </div>
 
         <AnimatePresence initial={false} mode="wait">
@@ -289,9 +210,9 @@ const Services = () => {
                 exit="exit"
                 variants={gridVariants}
               >
-                {subServices[activeCategory].map((service, index) => (
+                {getServicesByCategory(activeCategory).map((service, index) => (
                   <motion.div
-                    key={service.title}
+                    key={service.id}
                     variants={itemVariants}
                     whileHover={{ y: -6 }}
                     whileTap={{ scale: 0.98 }}
@@ -303,7 +224,10 @@ const Services = () => {
                     }}
                     layout
                   >
-                    <div className="group bg-white rounded-2xl shadow-md overflow-hidden transition-shadow focus-within:ring-2 focus-within:ring-primary/60">
+                    <div 
+                      className="group bg-white rounded-2xl shadow-md overflow-hidden transition-shadow focus-within:ring-2 focus-within:ring-primary/60 cursor-pointer"
+                      onClick={() => handleServiceClick(service)}
+                    >
                       <motion.div
                         className="aspect-[16/9] overflow-hidden"
                         initial={{ scale: 1 }}
@@ -321,7 +245,7 @@ const Services = () => {
                       </motion.div>
                       <div className="p-4 sm:p-5">
                         <h4 className="text-lg font-semibold text-brand-blue-dark transition-colors duration-300 group-hover:text-yellow-500">
-                          {service.title}
+                          {service.name}
                         </h4>
                         <p className="mt-1 text-sm sm:text-base text-gray-600">
                           {service.description}
@@ -335,6 +259,15 @@ const Services = () => {
           )}
         </AnimatePresence>
       </div>
+
+      {/* Details Modal */}
+      <DetailsModal
+        isOpen={isModalOpen}
+        onClose={closeModal}
+        item={selectedService}
+        itemType="service"
+        relatedItems={getRelatedItems()}
+      />
     </section>
   );
 };

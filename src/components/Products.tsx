@@ -1,6 +1,11 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 import ProductCard from "./ProductCard";
+import DetailsModal from "./DetailsModal";
+import { products, getProductsByCategory, getRelatedProducts } from "@/data/products";
+import { useInvoice } from "@/contexts/InvoiceContext";
+import { FileText } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 // Category images
 import electricalImage from "@/assets/ELECTRICAL.jpg";
@@ -20,7 +25,10 @@ import jigs from "@/assets/Jigs and Fixtures.png";
 
 const Products = () => {
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
-  const [activeTap, setActiveTap] = useState<string | null>(null); // For mobile tap highlight
+  const [activeTap, setActiveTap] = useState<string | null>(null);
+  const [selectedProduct, setSelectedProduct] = useState<any>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const { toggleDrawer, getTotalRequests } = useInvoice();
 
   const categories = [
     {
@@ -49,66 +57,19 @@ const Products = () => {
     },
   ];
 
-  const subProducts: Record<
-    string,
-    { title: string; description: string; image: string; imageAlt: string }[]
-  > = {
-    Electrical: [
-      {
-        title: "Electrical Supply",
-        description: "Complete solutions for industrial and commercial use.",
-        image: electricalSupplies,
-        imageAlt: "Electrical supply",
-      },
-      {
-        title: "Electrical Panel",
-        description: "Durable and safe panels for power distribution.",
-        image: electricalPanel,
-        imageAlt: "Electrical panel",
-      },
-      {
-        title: "Cable Tray",
-        description: "Reliable cable trays for safe wiring management.",
-        image: cableTray,
-        imageAlt: "Cable tray",
-      },
-    ],
-    "Mechanical Components": [
-      {
-        title: "AC Motors and Gear Motors",
-        description: "Industrial-grade motors built for durability.",
-        image: acMotor,
-        imageAlt: "AC motor",
-      },
-      {
-        title: "Bearings & Seals",
-        description: "Durable bearings and seals for precision.",
-        image: bearings,
-        imageAlt: "Bearings and seals",
-      },
-    ],
-    "Automation & Pneumatics": [
-      {
-        title: "Pneumatic Cylinder Accessories",
-        description: "High-quality pneumatic parts for automation systems.",
-        image: pneumaticsPart,
-        imageAlt: "Pneumatics",
-      },
-    ],
-    "Systems & Tooling": [
-      {
-        title: "Conveyor System",
-        description: "Custom conveyor systems for industrial use.",
-        image: conveyor,
-        imageAlt: "Conveyor system",
-      },
-      {
-        title: "Jigs and Fixtures",
-        description: "Precision jigs and fixtures for manufacturing.",
-        image: jigs,
-        imageAlt: "Jigs and fixtures",
-      },
-    ],
+  const handleProductClick = (product: any) => {
+    setSelectedProduct(product);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setSelectedProduct(null);
+  };
+
+  const getRelatedItems = () => {
+    if (!selectedProduct) return [];
+    return getRelatedProducts(selectedProduct.id, 4);
   };
 
   const gridVariants = {
@@ -123,14 +84,28 @@ const Products = () => {
   return (
     <section id="products" className="py-14 md:py-20 bg-muted/30 scroll-mt-24">
       <div className="container mx-auto px-4 sm:px-6 lg:px-12">
-        <div className="text-center mb-10 md:mb-16">
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-brand-blue-dark mb-3 md:mb-4">
-            Our Products
-          </h2>
-          <p className="text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto">
-            Explore our range of electrical, mechanical, automation, and tooling
-            products.
-          </p>
+        <div className="flex items-center justify-between mb-10 md:mb-16">
+          <div className="text-center flex-1">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-brand-blue-dark mb-3 md:mb-4">
+              Our Products
+            </h2>
+            <p className="text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto">
+              Explore our range of electrical, mechanical, automation, and tooling
+              products.
+            </p>
+          </div>
+          <Button
+            onClick={toggleDrawer}
+            variant="outline"
+            className="relative ml-4"
+          >
+            <FileText className="w-5 h-5" />
+            {getTotalRequests() > 0 && (
+              <span className="absolute -top-2 -right-2 bg-blue-600 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">
+                {getTotalRequests()}
+              </span>
+            )}
+          </Button>
         </div>
 
         {/* Category Grid */}
@@ -207,19 +182,20 @@ const Products = () => {
               viewport={{ once: true, amount: 0.2 }}
               variants={gridVariants}
             >
-              {subProducts[activeCategory].map((product, index) => (
+              {getProductsByCategory(activeCategory).map((product, index) => (
                 <motion.div
-                  key={index}
+                  key={product.id}
                   variants={itemVariants}
                   whileHover={{ y: -6 }}
                   whileTap={{ scale: 0.98 }}
                   transition={{ type: "spring", stiffness: 300, damping: 22 }}
                 >
                   <ProductCard
-                    title={product.title}
+                    title={product.name}
                     description={product.description}
                     image={product.image}
                     imageAlt={product.imageAlt}
+                    onToggle={() => handleProductClick(product)}
                   />
                 </motion.div>
               ))}
@@ -227,6 +203,15 @@ const Products = () => {
           </div>
         )}
       </div>
+
+      {/* Details Modal */}
+      <DetailsModal
+        isOpen={isModalOpen}
+        onClose={closeModal}
+        item={selectedProduct}
+        itemType="product"
+        relatedItems={getRelatedItems()}
+      />
     </section>
   );
 };
