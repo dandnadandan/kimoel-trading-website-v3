@@ -111,32 +111,16 @@ const DetailsModal: React.FC<DetailsModalProps> = ({
                   className="w-full h-full object-cover"
                 />
               </div>
-              
-              {/* Thumbnails */}
-              <div className="flex gap-2 mt-4">
-                {[1, 2, 3, 4].map((i) => (
-                  <div
-                    key={i}
-                    className="aspect-square w-16 rounded-lg overflow-hidden bg-white shadow cursor-pointer hover:ring-2 hover:ring-blue-500 transition-all"
-                  >
-                    <img
-                      src={item.image}
-                      alt={`${item.imageAlt} ${i}`}
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                ))}
-              </div>
             </div>
 
             {/* Content */}
             <div className="lg:w-1/2 p-6 lg:p-8 overflow-y-auto">
               {/* Header */}
-              <div className="mb-4">
-                <Badge variant="secondary" className="mb-2">
+              <div className="mb-6">
+                <Badge variant="secondary" className="mb-3">
                   {item.category}
                 </Badge>
-                <h2 className="text-2xl lg:text-3xl font-bold text-gray-900 mb-2">
+                <h2 className="text-2xl lg:text-3xl font-bold text-gray-900 mb-3">
                   {item.name}
                 </h2>
                 
@@ -149,73 +133,79 @@ const DetailsModal: React.FC<DetailsModalProps> = ({
                     {item.rating} ({Math.floor(Math.random() * 50) + 10} reviews)
                   </span>
                 </div>
-
-                {/* Price Section */}
-                <div className="mb-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <FileText className="w-5 h-5 text-blue-600" />
-                      <div>
-                        <h3 className="text-lg font-semibold text-blue-900">Create Invoice</h3>
-                        <p className="text-sm text-blue-700">
-                          Contact us for pricing and availability information
-                        </p>
-                      </div>
-                    </div>
-                    <Button
-                      onClick={() => setShowInvoiceModal(true)}
-                      variant="default"
-                      className="bg-blue-600 hover:bg-blue-700 text-white"
-                    >
-                      Create Invoice
-                    </Button>
-                  </div>
-                </div>
-
-                {/* Stock/Availability */}
-                <div className="flex items-center gap-2 mb-6">
-                  {itemType === 'product' ? (
-                    <>
-                      {(item as Product).inStock ? (
-                        <div className="flex items-center gap-1 text-green-600">
-                          <Check className="w-4 h-4" />
-                          <span className="text-sm">In Stock</span>
-                        </div>
-                      ) : (
-                        <div className="flex items-center gap-1 text-red-600">
-                          <X className="w-4 h-4" />
-                          <span className="text-sm">Out of Stock</span>
-                        </div>
-                      )}
-                    </>
-                  ) : (
-                    <div className="flex items-center gap-1 text-green-600">
-                      <Check className="w-4 h-4" />
-                      <span className="text-sm">Available</span>
-                    </div>
-                  )}
-                </div>
               </div>
 
               {/* Description */}
               <div className="mb-6">
-                <h3 className="text-lg font-semibold mb-2">Description</h3>
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">Description</h3>
                 <p className="text-gray-600 leading-relaxed">
-                  {item.longDescription}
+                  {item.longDescription || item.description}
                 </p>
               </div>
 
               {/* Features */}
-              <div className="mb-6">
-                <h3 className="text-lg font-semibold mb-3">Features</h3>
-                <ul className="space-y-2">
-                  {item.features.map((feature, index) => (
-                    <li key={index} className="flex items-start gap-2">
-                      <Check className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
-                      <span className="text-gray-600 text-sm">{feature}</span>
-                    </li>
-                  ))}
-                </ul>
+              {item.features && item.features.length > 0 && (
+                <div className="mb-6">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-2">Features</h3>
+                  <ul className="space-y-2">
+                    {item.features.map((feature, index) => (
+                      <li key={index} className="flex items-center gap-2 text-gray-600">
+                        <Check className="w-4 h-4 text-green-500 flex-shrink-0" />
+                        <span>{feature}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              {/* Stock/Availability */}
+              <div className="flex items-center gap-2 mb-6">
+                {itemType === 'product' ? (
+                  <>
+                    {(item as Product).inStock ? (
+                      <div className="flex items-center gap-1 text-green-600">
+                        <Check className="w-4 h-4" />
+                        <span className="text-sm font-medium">In Stock</span>
+                      </div>
+                    ) : (
+                      <div className="flex items-center gap-1 text-red-600">
+                        <X className="w-4 h-4" />
+                        <span className="text-sm font-medium">Out of Stock</span>
+                      </div>
+                    )}
+                  </>
+                ) : (
+                  <div className="flex items-center gap-1 text-green-600">
+                    <Check className="w-4 h-4" />
+                    <span className="text-sm font-medium">Available</span>
+                  </div>
+                )}
+              </div>
+
+              {/* Create Invoice Section */}
+              <div className="border-t pt-6">
+                <div className="bg-gray-50 rounded-lg p-6">
+                  <div className="flex items-center justify-between mb-4">
+                    <div>
+                      <h3 className="text-xl font-bold text-gray-900">Request Pricing</h3>
+                      <p className="text-gray-600 text-sm mt-1">
+                        Get a customized quote for this {itemType}
+                      </p>
+                    </div>
+                    <FileText className="w-8 h-8 text-gray-400" />
+                  </div>
+                  
+                  <Button
+                    onClick={() => setShowInvoiceModal(true)}
+                    className="w-full bg-black text-white hover:bg-gray-800 py-3 text-lg font-semibold"
+                  >
+                    Create Invoice
+                  </Button>
+                  
+                  <p className="text-xs text-gray-500 text-center mt-3">
+                    No commitment required. We'll contact you within 24 hours.
+                  </p>
+                </div>
               </div>
 
               {/* Additional Info for Services */}
@@ -227,7 +217,6 @@ const DetailsModal: React.FC<DetailsModalProps> = ({
                   </div>
                 </div>
               )}
-
             </div>
           </div>
 
